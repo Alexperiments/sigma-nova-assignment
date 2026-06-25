@@ -3,7 +3,7 @@ name = "sigma-nova-assignment"
 version = "0.1.0"
 description = ""
 readme = "README.md"
-requires-python = "~=3.13"
+requires-python = ">=3.11"
 dependencies = [
     "braindecode[hub]>=1.4,<1.6",
     "mne>=1.9.0",
@@ -22,4 +22,5 @@ dev = [
     "matplotlib>=3.10.3",
     "ipython>=9.4.0",
     "ipykernel>=7.3.0",
+    "pytest>=8.0.0",
 ]

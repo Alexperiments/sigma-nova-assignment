@@ -20,6 +20,7 @@
 
 - The application will be a CLI, for simplicity given the time constrain, portability and versatility.
 - The output for each benchmark run will be a markdown file containing the run configs, metadata and results. In addition it will output a result file containing only the numerical data in tabular format.
+- The benchmark layer will follow an object-oriented API with a shared base class and concrete dataset implementations. For the first version, evaluation will focus on aggregate metrics only (accuracy and Cohen's kappa), without subject-wise or session-wise split reporting.
 
 ## Project structure
 
@@ -32,7 +33,7 @@ src/
     ├── metrics.py
     ├── results.py
     │
-    ├── benchmarks/
+    ├── datasets/
     │   ├── __init__.py
     │   ├── base.py
     │   └── bnci2014_001.py
@@ -44,3 +45,9 @@ src/
         ├── labram.py
         └── cbramod.py
         └── ...
+
+## Future improvements
+
+- Add support for subject-wise and session-wise evaluation splits.
+- Introduce configurable preprocessing and loading options through the dataset config.
+- Improve reporting with per-subject breakdowns, confidence intervals and richer experiment metadata.
