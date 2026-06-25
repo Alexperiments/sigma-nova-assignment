@@ -20,7 +20,12 @@
 
 - The application will be a CLI, for simplicity given the time constrain, portability and versatility.
 - The output for each benchmark run will be a markdown file containing the run configs, metadata and results. In addition it will output a result file containing only the numerical data in tabular format.
-- The benchmark layer will follow an object-oriented API with a shared base class and concrete dataset implementations. For the first version, evaluation will focus on aggregate metrics only (accuracy and Cohen's kappa), without subject-wise or session-wise split reporting.
+- The project will follow an object-oriented API with a shared base class and concrete dataset implementations. For the first version, evaluation will focus on aggregate metrics only (accuracy and Cohen's kappa), without subject-wise or session-wise split reporting.
+- Dataset configuration will be expressed through a typed dataclass so that dataset-specific options remain explicit and easy to extend.
+- The dataset layer will be responsible for adapting raw inputs to the requirements of a target model, while the model layer remains focused on encoding and inference.
+- Conservative compatibility transformations (discard data to adapt the dataset to a model) will raise a warning. E.g. if a model expects 22 channels and a dataset has 60 channels, 22 will be selected from the dataset without stopping the run or skipping the model benchmark. This applies for channels, window size and sampling mismatches.
+- Compatibility transformations that imply data extrapolation or creation will raise an error. E.g. if a model expects 60 channels and the dataset only has 22 channels the benchmark for that model will be skipped. This applies for channels, window size and sampling mismatches.
+
 
 ## Project structure
 
