@@ -1,0 +1,1 @@
+"""EEG foundation model benchmark."""
