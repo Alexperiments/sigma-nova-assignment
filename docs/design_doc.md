@@ -4,7 +4,8 @@
 
 - Since the assignment is asking for a benchmarking service, I'll assume the benchmark lists (currently only BNCI2014_001) to be extensible in the future. This implies abstraction over benchmarks.
 - Since the training of a linear layer could be an expensive task, I'll assume the trained weights to be cached for future use. This could be locally or not.
-- since LaBraM model comes in different size I'll assume that the base model is enough for the purpose of this assignment. In addition it has a similar size with respect to CBraMod.
+- since LaBraM model comes in different size I'll assume that the base model is enough for the purpose of this assignment. In addition it has a similar size with respect to CBraMod
+- since the assignment talks only about foundation model benchmarking, so all the future models are also assumed to be foundation models. A new linear layer will always be trained on top of the FM.
 
 ## To be tested
 
