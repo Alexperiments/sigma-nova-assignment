@@ -9,3 +9,7 @@
 ## To be tested
 
 - It's possible that running the models on the benchmark could be an expensive task, if this is the case it could be useful to cache the results for a given unique combination of (service version, benchmark, model, trained head).
+
+## Requirements
+
+- The service should be flexible regarding channel counts, sampling rates, window sizes, as there could be mismatches between models and datasets.
