@@ -4,7 +4,7 @@ from eeg_benchmark.types import BenchmarkResult
 
 def test_result_row_includes_adaptation_metadata() -> None:
     result = BenchmarkResult(
-        model="labram",
+        model_name="labram",
         embedding_shape=(10, 200),
         train_accuracy=0.8,
         test_accuracy=0.5,

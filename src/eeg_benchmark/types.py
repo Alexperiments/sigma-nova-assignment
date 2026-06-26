@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class BenchmarkResult:
-    model: str
+    model_name: str
     embedding_shape: tuple[int, ...]
     train_accuracy: float
     test_accuracy: float

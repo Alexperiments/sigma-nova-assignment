@@ -18,7 +18,7 @@ def result_row(
     seed: int,
 ) -> dict[str, Any]:
     return {
-        "model": result.model,
+        "model": result.model_name,
         "dataset": dataset,
         "batch_size": batch_size,
         "epochs": epochs,

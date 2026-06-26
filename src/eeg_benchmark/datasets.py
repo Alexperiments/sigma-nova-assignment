@@ -48,9 +48,8 @@ class MOABBDatasetWrapper:
             preload=False,
         )
     
-    def split_train_test(
-        self,
-        windows: BaseConcatDataset,
-    ) -> tuple[BaseConcatDataset, BaseConcatDataset]:
-        splits = windows.split("session")
-        return splits["0train"], splits["1test"]
+def split_train_test(
+    windows: BaseConcatDataset,
+) -> tuple[BaseConcatDataset, BaseConcatDataset]:
+    splits = windows.split("session")
+    return splits["0train"], splits["1test"]
