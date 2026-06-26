@@ -5,10 +5,15 @@ description = ""
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "braindecode[hub]>=1.4,<1.6",
+    "braindecode[hub,moabb]>=1.4,<1.6",
     "mne>=1.9.0",
     "pandas>=3.0.3",
+    "scikit-learn>=1.7.2",
 ]
+
+[project.scripts]
+eeg-benchmark = "eeg_benchmark.cli:main"
+test = "pytest:main"
 
 [build-system]
 requires = ["setuptools>=77"]
