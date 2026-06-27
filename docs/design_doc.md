@@ -53,5 +53,6 @@ src/
 - Add subject-wise metric reporting.
 - Add more dataset-specific loading/preprocessing overrides only when automatic metadata inference is insufficient.
 - Improve reporting with per-subject breakdowns, confidence intervals and richer experiment metadata.
+- The current benchmark accuracy is low and close to chance for a 4-class task. This may be due to a combination of minimal preprocessing, simple crop/pad window handling, CBraMod feature pooling, and limited linear-probe tuning. A useful next step would be to run targeted ablations around preprocessing, window extraction, embedding aggregation, and probe hyperparameters to understand which part is limiting performance.
 - The first version will support MOABB datasets through Braindecode only, and could later be extended to other datasets served by Braindecode.
 - The persistence for now is just a simple CSV file for run, a much more robust and maintanable solution would be to store the benchmark runs in a relational database.

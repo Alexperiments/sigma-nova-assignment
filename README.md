@@ -22,6 +22,8 @@ uv run eeg-benchmark --models labram cbramod --dataset BNCI2014_001 --device cpu
 
 Results are written as CSV files under `results/`.
 
+For reproducibility, model adapters pin specific Hugging Face revisions, and each result row records the Python, torch, Braindecode and MOABB versions used for the run.
+
 ## Tests
 
 Run the unit tests:
