@@ -18,10 +18,10 @@ def pad_or_crop_time(x: np.ndarray, target_window_samples: int) -> np.ndarray:
 def adapt_windows_to_model(
     windows: BaseConcatDataset,
     model: FrozenFoundationModel,
-) -> tuple[BaseConcatDataset, int | None, str]:
+) -> BaseConcatDataset:
     target_window_samples = model.input_window_samples
     if target_window_samples is None:
-        return windows, None, "none"
+        return windows
 
     target_window_samples = int(target_window_samples)
 
@@ -34,4 +34,4 @@ def adapt_windows_to_model(
                 pad_or_crop_time(transform(x), target_window_samples)
             )
 
-    return windows, target_window_samples, "pad_or_crop"
+    return windows

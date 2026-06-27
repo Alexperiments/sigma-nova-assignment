@@ -1,7 +1,7 @@
 from types import SimpleNamespace
 
 from eeg_benchmark import datasets
-from eeg_benchmark.datasets import MOABBDatasetWrapper
+from eeg_benchmark.datasets import MOABBDatasetWrapper, split_train_test
 
 
 def fake_moabb_dataset(
@@ -107,12 +107,7 @@ def test_split_train_test_returns_expected_session_splits() -> None:
                 "1test": "test-windows",
             }
 
-    wrapper = MOABBDatasetWrapper(
-        dataset_name="fake",
-        dataset=fake_moabb_dataset(),
-    )
-
-    assert wrapper.split_train_test(FakeWindows()) == (
+    assert split_train_test(FakeWindows()) == (
         "train-windows",
         "test-windows",
     )

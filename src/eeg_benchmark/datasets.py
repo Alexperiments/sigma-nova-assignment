@@ -53,3 +53,6 @@ def split_train_test(
 ) -> tuple[BaseConcatDataset, BaseConcatDataset]:
     splits = windows.split("session")
     return splits["0train"], splits["1test"]
+
+
+DATASETS = ["BNCI2014_001"]

@@ -8,4 +8,3 @@ class BenchmarkResult:
     train_accuracy: float
     test_accuracy: float
     target_window_samples: int | None
-    time_adjustment: str

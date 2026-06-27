@@ -9,7 +9,6 @@ def test_result_row_includes_adaptation_metadata() -> None:
         train_accuracy=0.8,
         test_accuracy=0.5,
         target_window_samples=3000,
-        time_adjustment="pad_or_crop",
     )
 
     row = result_row(
@@ -24,4 +23,3 @@ def test_result_row_includes_adaptation_metadata() -> None:
 
     assert row["embedding_shape"] == "10x200"
     assert row["target_window_samples"] == 3000
-    assert row["time_adjustment"] == "pad_or_crop"

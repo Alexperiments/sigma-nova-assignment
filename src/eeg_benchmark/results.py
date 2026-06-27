@@ -29,7 +29,6 @@ def result_row(
         "train_accuracy": result.train_accuracy,
         "test_accuracy": result.test_accuracy,
         "target_window_samples": result.target_window_samples,
-        "time_adjustment": result.time_adjustment,
     }
 
 
