@@ -1,7 +1,8 @@
 import argparse
+import logging
 
-from eeg_benchmark.models import MODELS
 from eeg_benchmark.datasets import DATASETS
+from eeg_benchmark.models import MODELS
 from eeg_benchmark.pipeline import run_pipeline
 
 
@@ -20,6 +21,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     run_pipeline(
         model_name_list=args.models,
         dataset_name_list=[args.dataset],
@@ -27,8 +29,10 @@ def main() -> None:
         batch_size=args.batch_size,
         epochs=args.epochs,
         lr=args.lr,
+        device=args.device,
         output_dir=args.output_dir,
     )
+
 
 if __name__ == "__main__":
     main()
