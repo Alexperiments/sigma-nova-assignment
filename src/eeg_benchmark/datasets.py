@@ -1,9 +1,25 @@
 from functools import cached_property
 from typing import Self
 
+import numpy as np
 from braindecode.datasets import MOABBDataset
 from braindecode.datasets.base import BaseConcatDataset
 from braindecode.preprocessing import Preprocessor, create_windows_from_events, preprocess
+
+MICROVOLTS_PER_VOLT = 1_000_000.0
+EXTREME_AMPLITUDE_MICROVOLTS = 500.0
+
+
+def volts_to_microvolts(x: np.ndarray) -> np.ndarray:
+    return x * MICROVOLTS_PER_VOLT
+
+
+def clip_extreme_microvolts(x: np.ndarray) -> np.ndarray:
+    return np.clip(
+        x,
+        -EXTREME_AMPLITUDE_MICROVOLTS,
+        EXTREME_AMPLITUDE_MICROVOLTS,
+    )
 
 
 class MOABBDatasetWrapper:
@@ -13,11 +29,15 @@ class MOABBDatasetWrapper:
 
     @classmethod
     def load(cls, dataset_name: str) -> Self:
-        """Load a MOABB dataset and apply preprocessing to pick EEG channels."""
+        """Load a MOABB dataset and apply minimal EEG preprocessing."""
         dataset = MOABBDataset(dataset_name=dataset_name)
         preprocess(
             dataset,
-            [Preprocessor("pick", picks="eeg", apply_on_array=False)],
+            [
+                Preprocessor("pick", picks="eeg", apply_on_array=False),
+                Preprocessor(volts_to_microvolts, apply_on_array=True),
+                Preprocessor(clip_extreme_microvolts, apply_on_array=True),
+            ],
         )
 
         return cls(dataset_name=dataset_name, dataset=dataset)

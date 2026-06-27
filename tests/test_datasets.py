@@ -1,7 +1,14 @@
 from types import SimpleNamespace
 
+import numpy as np
+
 from eeg_benchmark import datasets
-from eeg_benchmark.datasets import MOABBDatasetWrapper, split_train_test
+from eeg_benchmark.datasets import (
+    MOABBDatasetWrapper,
+    clip_extreme_microvolts,
+    split_train_test,
+    volts_to_microvolts,
+)
 
 
 def fake_moabb_dataset(
@@ -17,7 +24,9 @@ def fake_moabb_dataset(
     return SimpleNamespace(datasets=[SimpleNamespace(raw=raw)])
 
 
-def test_load_creates_moabb_dataset_and_picks_eeg(monkeypatch) -> None:
+def test_load_creates_moabb_dataset_and_applies_minimal_preprocessing(
+    monkeypatch,
+) -> None:
     created = {}
     preprocessed = {}
 
@@ -38,7 +47,31 @@ def test_load_creates_moabb_dataset_and_picks_eeg(monkeypatch) -> None:
     assert wrapper.dataset_name == "BNCI2014_001"
     assert wrapper.dataset is created["dataset"]
     assert preprocessed["dataset"] is wrapper.dataset
-    assert len(preprocessed["preprocessors"]) == 1
+    preprocessors = preprocessed["preprocessors"]
+    assert len(preprocessors) == 3
+    assert preprocessors[0].fn == "pick"
+    assert preprocessors[0].kwargs == {"picks": "eeg"}
+    assert preprocessors[0].apply_on_array is False
+    assert preprocessors[1].fn is volts_to_microvolts
+    assert preprocessors[1].apply_on_array is True
+    assert preprocessors[2].fn is clip_extreme_microvolts
+    assert preprocessors[2].apply_on_array is True
+
+
+def test_volts_to_microvolts_scales_values() -> None:
+    values = np.array([[-1e-6, 0.0, 2e-6]])
+
+    result = volts_to_microvolts(values)
+
+    np.testing.assert_array_equal(result, np.array([[-1.0, 0.0, 2.0]]))
+
+
+def test_clip_extreme_microvolts_clips_large_values() -> None:
+    values = np.array([[-2_000.0, -20.0, 20.0, 2_000.0]])
+
+    result = clip_extreme_microvolts(values)
+
+    np.testing.assert_array_equal(result, np.array([[-1_000.0, -20.0, 20.0, 1_000.0]]))
 
 
 def test_channel_names_come_from_first_raw_dataset() -> None:
