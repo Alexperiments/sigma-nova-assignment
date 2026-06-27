@@ -21,3 +21,11 @@ uv run eeg-benchmark --models labram cbramod --dataset BNCI2014_001 --device cpu
 ```
 
 Results are written as CSV files under `results/`.
+
+## Tests
+
+Run the unit tests:
+
+```bash
+uv run pytest
+```
