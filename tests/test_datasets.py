@@ -4,6 +4,7 @@ import numpy as np
 
 from eeg_benchmark import datasets
 from eeg_benchmark.datasets import (
+    EXTREME_AMPLITUDE_MICROVOLTS,
     MOABBDatasetWrapper,
     clip_extreme_microvolts,
     split_train_test,
@@ -71,7 +72,19 @@ def test_clip_extreme_microvolts_clips_large_values() -> None:
 
     result = clip_extreme_microvolts(values)
 
-    np.testing.assert_array_equal(result, np.array([[-1_000.0, -20.0, 20.0, 1_000.0]]))
+    np.testing.assert_array_equal(
+        result,
+        np.array(
+            [
+                [
+                    -EXTREME_AMPLITUDE_MICROVOLTS,
+                    -20.0,
+                    20.0,
+                    EXTREME_AMPLITUDE_MICROVOLTS,
+                ]
+            ]
+        ),
+    )
 
 
 def test_channel_names_come_from_first_raw_dataset() -> None:

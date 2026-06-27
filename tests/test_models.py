@@ -72,8 +72,14 @@ def test_cbramod_load_uses_encoder_checkpoint(monkeypatch) -> None:
     calls = {}
     backbone = FakeBackbone()
 
-    def fake_from_pretrained(repository: str, *, return_encoder_output: bool):
+    def fake_from_pretrained(
+        repository: str,
+        *,
+        revision: str,
+        return_encoder_output: bool,
+    ):
         calls["repository"] = repository
+        calls["revision"] = revision
         calls["return_encoder_output"] = return_encoder_output
         return backbone
 
@@ -82,8 +88,11 @@ def test_cbramod_load_uses_encoder_checkpoint(monkeypatch) -> None:
     adapter = CBraModFoundationModel.load(device="cpu")
 
     assert adapter.model is backbone
+    assert adapter.repository == "braindecode/cbramod-pretrained"
+    assert adapter.revision == "584cdc415913739a05d84bf0c1cb3db397764507"
     assert calls == {
         "repository": "braindecode/cbramod-pretrained",
+        "revision": "584cdc415913739a05d84bf0c1cb3db397764507",
         "return_encoder_output": True,
     }
 
@@ -116,8 +125,9 @@ def test_labram_load_uses_pretrained_checkpoint(monkeypatch) -> None:
     calls = {}
     backbone = FakeBackbone()
 
-    def fake_from_pretrained(repository: str):
+    def fake_from_pretrained(repository: str, *, revision: str):
         calls["repository"] = repository
+        calls["revision"] = revision
         return backbone
 
     monkeypatch.setattr(models.Labram, "from_pretrained", fake_from_pretrained)
@@ -125,7 +135,12 @@ def test_labram_load_uses_pretrained_checkpoint(monkeypatch) -> None:
     adapter = LaBraMFoundationModel.load(device="cpu")
 
     assert adapter.model is backbone
-    assert calls == {"repository": "braindecode/labram-pretrained"}
+    assert adapter.repository == "braindecode/labram-pretrained"
+    assert adapter.revision == "0563b6c626e7b40d9a36653b763715db94d945d7"
+    assert calls == {
+        "repository": "braindecode/labram-pretrained",
+        "revision": "0563b6c626e7b40d9a36653b763715db94d945d7",
+    }
 
 
 def test_labram_encode_requires_channel_names() -> None:
