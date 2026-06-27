@@ -6,11 +6,20 @@ from braindecode.models import CBraMod, Labram
 
 
 class FrozenFoundationModel(ABC):
-    def __init__(self, model: nn.Module, device: str = "cpu") -> None:
+    def __init__(
+        self,
+        model: nn.Module,
+        device: str = "cpu",
+        *,
+        repository: str = "",
+        revision: str = "",
+    ) -> None:
         self.device = torch.device(device)
         self.model = model.to(self.device)
         self.model.requires_grad_(False)
         self.model.eval()
+        self.repository = repository
+        self.revision = revision
 
     @property
     def input_window_samples(self) -> int | None:
@@ -36,15 +45,22 @@ class FrozenFoundationModel(ABC):
 
 class CBraModFoundationModel(FrozenFoundationModel):
     REPOSITORY = "braindecode/cbramod-pretrained"
+    REVISION = "584cdc415913739a05d84bf0c1cb3db397764507"
 
     @classmethod
     def load(cls, device: str = "cpu") -> "CBraModFoundationModel":
         # The checkpoint has no output size, so load the encoder without a task head.
         model = CBraMod.from_pretrained(
             cls.REPOSITORY,
+            revision=cls.REVISION,
             return_encoder_output=True,
         )
-        return cls(model, device)
+        return cls(
+            model,
+            device,
+            repository=cls.REPOSITORY,
+            revision=cls.REVISION,
+        )
 
     @torch.inference_mode()
     def encode(
@@ -63,12 +79,18 @@ class CBraModFoundationModel(FrozenFoundationModel):
 
 class LaBraMFoundationModel(FrozenFoundationModel):
     REPOSITORY = "braindecode/labram-pretrained"
+    REVISION = "0563b6c626e7b40d9a36653b763715db94d945d7"
 
     @classmethod
     def load(cls, device: str = "cpu") -> "LaBraMFoundationModel":
         # This checkpoint has no classification head (n_outputs=0).
-        model = Labram.from_pretrained(cls.REPOSITORY)
-        return cls(model, device)
+        model = Labram.from_pretrained(cls.REPOSITORY, revision=cls.REVISION)
+        return cls(
+            model,
+            device,
+            repository=cls.REPOSITORY,
+            revision=cls.REVISION,
+        )
 
     @torch.inference_mode()
     def encode(

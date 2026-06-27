@@ -76,6 +76,8 @@ def run_model(
 
     return BenchmarkResult(
         model_name=model_name,
+        model_repository=model.repository,
+        model_revision=model.revision,
         embedding_shape=tuple(train_embeddings.shape),
         train_accuracy=train_accuracy,
         test_accuracy=test_accuracy,

@@ -1,10 +1,29 @@
 from datetime import datetime
+from importlib.metadata import PackageNotFoundError, version
+import platform
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+import torch
 
 from eeg_benchmark.types import BenchmarkResult
+
+
+def package_version(package_name: str) -> str:
+    try:
+        return version(package_name)
+    except PackageNotFoundError:
+        return "unknown"
+
+
+def runtime_metadata() -> dict[str, str]:
+    return {
+        "python_version": platform.python_version(),
+        "torch_version": torch.__version__,
+        "braindecode_version": package_version("braindecode"),
+        "moabb_version": package_version("moabb"),
+    }
 
 
 def result_row(
@@ -19,6 +38,8 @@ def result_row(
 ) -> dict[str, Any]:
     return {
         "model": result.model_name,
+        "model_repository": result.model_repository,
+        "model_revision": result.model_revision,
         "dataset": dataset,
         "batch_size": batch_size,
         "epochs": epochs,
@@ -29,6 +50,7 @@ def result_row(
         "train_accuracy": result.train_accuracy,
         "test_accuracy": result.test_accuracy,
         "target_window_samples": result.target_window_samples,
+        **runtime_metadata(),
     }
 
 
