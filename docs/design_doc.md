@@ -8,16 +8,12 @@
 - since the provided models' checkpoints target incompatible Braindecode versions, I'll assume that the latest version has to be used. So I won't be able to use directly the conversion code showed [here](https://huggingface.co/braindecode/Labram-Braindecode), but I'll use the [version](https://huggingface.co/braindecode/labram-pretrained) provided by the latest Braindecode package.
 - I'll assume here braindecode datasets only.
 
-## To be tested
-
-- For this first exercise, I'll assume the benchmark can be recomputed directly, including model embeddings, probe training and result generation.
-
-
 ## Requirements
 
-- The service should be explicit about possible mismatches between models and datasets: channel count, sampling frequency and window size.
-- For this exercise, I won't add preprocessing dedicated to channel-count or sampling-frequency mismatches. If channel-count mismatches need to be supported later, I would rely on the interpolated versions of the Braindecode models where available. If sampling-frequency mismatches need to be supported later, I would resample the raw signal before creating windows.
-- Window-size mismatches will be handled conservatively by adapting the trial windows to the model input length.
+- The service should run a motor imagery benchmark on BNCI2014_001.
+- The service should support frozen LaBraM and CBraMod backbones.
+- The service should train a linear classification head on top of extracted embeddings using the training split.
+- The project should be directly runnable and installable.
 
 ## Design decisions
 
@@ -26,9 +22,10 @@
 - The project will keep the dataset abstraction small: a MOABB dataset wrapper will resolve the benchmark name, load the Braindecode/MOABB dataset, expose metadata and create event-based windows.
 - The model abstraction will be object-oriented: a shared frozen foundation-model base class will handle device placement/freezing, while concrete model adapters will implement the encoding details.
 - For the first version, evaluation will focus on aggregate accuracy only. Train/test data will be split by the dataset session labels, but reporting will not include per-subject or per-session metric breakdowns.
+- The assignment asks the report to discuss possible mismatch between a foundation model's pretraining EEG configuration and the benchmark dataset. For this version, the implementation will handle the concrete mismatch needed to run the selected models: event windows will be adapted to the model input length, and LaBraM will receive the dataset channel names so Braindecode can select the matching positional embeddings.
 - Window-size adaptation will be deterministic: windows longer than the model input length will be cropped, while windows shorter than the model input length will be padded with zeroes.
 - Each result row will include the benchmark configuration needed to interpret the run: model, dataset, seed, device, epochs, learning rate, batch size, embedding shape and target window size.
-- Dataset metadata such as channel names, sampling rate and effective window size will be inferred from the loaded data when possible. Explicit constructor arguments are only fallback/override hooks, not a required configuration object.
+- Dataset metadata such as channel names and event labels will be inferred from the loaded data when possible.
 - The dataset layer will be responsible for loading the dataset, applying minimal generic preprocessing, exposing metadata and creating windows from events.
 - The model-compatibility layer will be responsible for adapting event windows to model requirements, while the model layer remains focused on encoding and inference.
 - Minimal preprocessing will pick EEG channels, convert signal units from volts to microvolts and clip obviously extreme amplitudes. This should keep the benchmark inputs in a reasonable range without introducing dataset-specific feature engineering.
