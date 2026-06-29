@@ -26,6 +26,7 @@ exclude = [
     "build",
     "dist",
     "node_modules",
+    "notebooks/",
     "site-packages",
     "venv",
     "tests/",
