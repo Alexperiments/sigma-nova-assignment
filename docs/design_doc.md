@@ -2,7 +2,7 @@
 
 ## Assumptions
 
-- Since the assignment is asking for a benchmarking service, I'll assume the benchmark list (initially BNCI2014_001) to be extensible in the future. This implies abstraction over benchmarks.
+- Since the assignment is asking for a benchmarking service, I'll assume the dataset list (initially BNCI2014_001) to be extensible in the future. This implies abstraction over datasets.
 - since LaBraM model comes in different size I'll assume that the base model is enough for the purpose of this assignment. In addition it has a similar size with respect to CBraMod
 - since the assignment talks only about foundation model benchmarking, so all the future models are also assumed to be foundation models. A new linear layer will always be trained on top of the FM.
 - since the provided models' checkpoints target incompatible Braindecode versions, I'll assume that the latest version has to be used. So I won't be able to use directly the conversion code showed [here](https://huggingface.co/braindecode/Labram-Braindecode), but I'll use the [version](https://huggingface.co/braindecode/labram-pretrained) provided by the latest Braindecode package.
@@ -32,6 +32,7 @@
 - The dataset layer will be responsible for loading the dataset, applying minimal generic preprocessing, exposing metadata and creating windows from events.
 - The model-compatibility layer will be responsible for adapting event windows to model requirements, while the model layer remains focused on encoding and inference.
 - Minimal preprocessing will pick EEG channels, convert signal units from volts to microvolts and clip obviously extreme amplitudes. This should keep the benchmark inputs in a reasonable range without introducing dataset-specific feature engineering.
+- For CBraMod, the channel and patch feature map will be mean-pooled into one embedding per trial to keep this assignment implementation simple and fast to compute.
 
 
 ## Project structure
@@ -52,7 +53,8 @@ src/
 
 - Add subject-wise metric reporting.
 - Add more dataset-specific loading/preprocessing overrides only when automatic metadata inference is insufficient.
-- Improve reporting with per-subject breakdowns, confidence intervals and richer experiment metadata.
-- The current benchmark accuracy is low and close to chance for a 4-class task. This may be due to a combination of minimal preprocessing, simple crop/pad window handling, CBraMod feature pooling, and limited linear-probe tuning. A useful next step would be to run targeted ablations around preprocessing, window extraction, embedding aggregation, and probe hyperparameters to understand which part is limiting performance.
+- Add confidence intervals, for example seeding different runs and computing average and std. dev.
+- The current benchmark accuracy is low and close to chance for a 4-class task. This may be due to a combination of minimal preprocessing, simple crop/pad window handling, and limited linear-probe tuning. A useful next step would be to run targeted ablations around preprocessing, window extraction, and probe hyperparameters to understand which part is limiting performance.
 - The first version will support MOABB datasets through Braindecode only, and could later be extended to other datasets served by Braindecode.
 - The persistence for now is just a simple CSV file for run, a much more robust and maintanable solution would be to store the benchmark runs in a relational database.
+- The linear probes are trained for the same fixed amount of epochs for each model, a smarter approach would be to implement an early stopping to prevent overfitting.
