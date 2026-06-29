@@ -31,21 +31,6 @@
 - Minimal preprocessing will pick EEG channels, convert signal units from volts to microvolts and clip obviously extreme amplitudes. This should keep the benchmark inputs in a reasonable range without introducing dataset-specific feature engineering.
 - For CBraMod, the channel and patch feature map will be mean-pooled into one embedding per trial to keep this assignment implementation simple and fast to compute.
 
-
-## Project structure
-
-src/
-└── eeg_benchmark/
-    ├── __init__.py
-    ├── adapters.py
-    ├── cli.py
-    ├── probe.py
-    ├── pipeline.py
-    ├── results.py
-    ├── datasets.py
-    ├── models.py
-    └── types.py
-
 ## Future improvements
 
 - Add subject-wise metric reporting.
