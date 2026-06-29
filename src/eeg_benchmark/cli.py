@@ -1,3 +1,5 @@
+"""Command-line interface for EEG benchmark runs."""
+
 import argparse
 import logging
 
@@ -7,6 +9,7 @@ from eeg_benchmark.pipeline import run_pipeline
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse benchmark command-line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", choices=DATASETS, default="BNCI2014_001")
     parser.add_argument("--models", nargs="+", choices=MODELS, default=list(MODELS))
@@ -20,6 +23,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    """Run the benchmark command-line entry point."""
     args = parse_args()
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     run_pipeline(

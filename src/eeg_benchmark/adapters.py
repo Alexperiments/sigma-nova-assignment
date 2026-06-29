@@ -1,3 +1,5 @@
+"""Adapt EEG windows to model input contracts."""
+
 import numpy as np
 from braindecode.datasets.base import BaseConcatDataset
 
@@ -5,12 +7,7 @@ from eeg_benchmark.models import FrozenFoundationModel
 
 
 def pad_or_crop_sample(x: np.ndarray, target_window_samples: int) -> np.ndarray:
-    """Force an EEG window to the model's expected sample length.
-
-    Braindecode windows keep time on the last axis. Longer windows are
-    truncated from the end; shorter windows are right-padded with zeros so the
-    event-locked start stays aligned.
-    """
+    """Force an EEG window to the model's expected sample length."""
     n_times = x.shape[-1]
     if n_times > target_window_samples:
         return x[..., :target_window_samples]
@@ -25,11 +22,7 @@ def adapt_windows_to_model(
     windows: BaseConcatDataset,
     model: FrozenFoundationModel,
 ) -> BaseConcatDataset:
-    """Install lazy window adaptation for models with fixed input duration.
-
-    Existing dataset transforms are preserved and run before the crop/pad
-    compatibility step. Variable-length models leave windows unchanged.
-    """
+    """Install lazy window adaptation for models with fixed input duration."""
     target_window_samples = model.input_window_samples
     if target_window_samples is None:
         return windows

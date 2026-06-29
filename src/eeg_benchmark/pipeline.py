@@ -1,26 +1,31 @@
+"""Benchmark orchestration for datasets, models, probes, and results."""
+
 import logging
 from pathlib import Path
 
 import torch
+from braindecode.datasets.base import BaseConcatDataset
 from torch import Tensor
 from torch.utils.data import DataLoader
 
 from eeg_benchmark.adapters import adapt_windows_to_model
 from eeg_benchmark.datasets import MOABBDatasetWrapper, split_train_test
-from eeg_benchmark.models import FrozenFoundationModel, MODELS
+from eeg_benchmark.models import MODELS, FrozenFoundationModel
 from eeg_benchmark.probe import evaluate_linear_probe
 from eeg_benchmark.results import result_row, save_results
 from eeg_benchmark.types import BenchmarkResult
+
 
 LOGGER = logging.getLogger(__name__)
 
 
 def encode_dataset(
-    dataset,
+    dataset: BaseConcatDataset,
     model: FrozenFoundationModel,
     channel_names: list[str],
     batch_size: int,
 ) -> tuple[Tensor, Tensor]:
+    """Encode every window in a dataset with a frozen model."""
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
     embeddings = []
     labels = []
@@ -43,6 +48,7 @@ def run_model(
     lr: float,
     device: str = "cpu",
 ) -> BenchmarkResult:
+    """Run one model on one dataset and return probe metrics."""
     model = MODELS[model_name].load(device=device)
     dataset = MOABBDatasetWrapper.load(dataset_name)
 
@@ -95,6 +101,7 @@ def run_pipeline(
     device: str = "cpu",
     output_dir: str | Path = "results",
 ) -> None:
+    """Run the requested benchmark grid and write one results CSV."""
     torch.manual_seed(seed)
 
     result_rows = []
@@ -122,4 +129,4 @@ def run_pipeline(
             )
 
     path = save_results(result_rows, output_dir)
-    LOGGER.info(f"saved: {path}")
+    LOGGER.info("saved: %s", path)

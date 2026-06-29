@@ -1,8 +1,12 @@
+"""Shared benchmark data structures."""
+
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
 class BenchmarkResult:
+    """Store metrics and metadata for one benchmark run."""
+
     model_name: str
     model_repository: str
     model_revision: str

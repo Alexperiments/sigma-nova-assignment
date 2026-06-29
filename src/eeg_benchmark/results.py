@@ -1,6 +1,8 @@
-from datetime import datetime
-from importlib.metadata import PackageNotFoundError, version
+"""Result row construction and CSV persistence."""
+
 import platform
+from datetime import UTC, datetime
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
 
@@ -11,6 +13,7 @@ from eeg_benchmark.types import BenchmarkResult
 
 
 def package_version(package_name: str) -> str:
+    """Return an installed package version or unknown."""
     try:
         return version(package_name)
     except PackageNotFoundError:
@@ -18,6 +21,7 @@ def package_version(package_name: str) -> str:
 
 
 def runtime_metadata() -> dict[str, str]:
+    """Return runtime versions captured with each benchmark row."""
     return {
         "python_version": platform.python_version(),
         "torch_version": torch.__version__,
@@ -36,6 +40,7 @@ def result_row(
     device: str,
     seed: int,
 ) -> dict[str, Any]:
+    """Build one serializable benchmark result row."""
     return {
         "model": result.model_name,
         "model_repository": result.model_repository,
@@ -55,10 +60,11 @@ def result_row(
 
 
 def save_results(rows: list[dict[str, Any]], output_dir: str | Path) -> Path:
+    """Write benchmark result rows to a timestamped CSV file."""
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(tz=UTC).strftime("%Y%m%d_%H%M%S")
     path = output_dir / f"benchmark_results_{timestamp}.csv"
     pd.DataFrame(rows).to_csv(path, index=False)
     return path

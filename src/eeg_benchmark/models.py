@@ -1,11 +1,15 @@
+"""Foundation model adapters for benchmark embeddings."""
+
 from abc import ABC, abstractmethod
 
 import torch
-from torch import Tensor, nn
 from braindecode.models import CBraMod, Labram
+from torch import Tensor, nn
 
 
 class FrozenFoundationModel(ABC):
+    """Base wrapper for frozen EEG foundation model encoders."""
+
     def __init__(
         self,
         model: nn.Module,
@@ -14,15 +18,17 @@ class FrozenFoundationModel(ABC):
         repository: str = "",
         revision: str = "",
     ) -> None:
+        """Create a frozen model wrapper on the requested device."""
         self.device = torch.device(device)
         self.model = model.to(self.device)
-        self.model.requires_grad_(False)
+        self.model.requires_grad_(requires_grad=False)
         self.model.eval()
         self.repository = repository
         self.revision = revision
 
     @property
     def input_window_samples(self) -> int | None:
+        """Return the model's fixed input length in samples when available."""
         try:
             value = getattr(self.model, "n_times", None)
         except ValueError:
@@ -31,6 +37,7 @@ class FrozenFoundationModel(ABC):
 
     @property
     def expected_channel_names(self) -> list[str] | None:
+        """Return the model's expected channel names when available."""
         return getattr(self.model, "ch_names", None)
 
     @abstractmethod
@@ -44,11 +51,14 @@ class FrozenFoundationModel(ABC):
 
 
 class CBraModFoundationModel(FrozenFoundationModel):
+    """Braindecode CBraMod encoder wrapper."""
+
     REPOSITORY = "braindecode/cbramod-pretrained"
     REVISION = "584cdc415913739a05d84bf0c1cb3db397764507"
 
     @classmethod
     def load(cls, device: str = "cpu") -> "CBraModFoundationModel":
+        """Load the pretrained CBraMod encoder."""
         # The checkpoint has no output size, so load the encoder without a task head.
         model = CBraMod.from_pretrained(
             cls.REPOSITORY,
@@ -69,6 +79,7 @@ class CBraModFoundationModel(FrozenFoundationModel):
         *,
         channel_names: list[str] | None = None,
     ) -> Tensor:
+        """Encode EEG trials with CBraMod."""
         # CBraMod does not use channel names in its forward pass.
         del channel_names
         output = self.model(inputs.to(self.device), return_features=True)
@@ -77,11 +88,14 @@ class CBraModFoundationModel(FrozenFoundationModel):
 
 
 class LaBraMFoundationModel(FrozenFoundationModel):
+    """Braindecode LaBraM encoder wrapper."""
+
     REPOSITORY = "braindecode/labram-pretrained"
     REVISION = "0563b6c626e7b40d9a36653b763715db94d945d7"
 
     @classmethod
     def load(cls, device: str = "cpu") -> "LaBraMFoundationModel":
+        """Load the pretrained LaBraM encoder."""
         # This checkpoint has no classification head (n_outputs=0).
         model = Labram.from_pretrained(cls.REPOSITORY, revision=cls.REVISION)
         return cls(
@@ -98,6 +112,7 @@ class LaBraMFoundationModel(FrozenFoundationModel):
         *,
         channel_names: list[str] | None = None,
     ) -> Tensor:
+        """Encode EEG trials with LaBraM."""
         # LaBraM uses channel names to select the matching positional embeddings.
 
         if channel_names is None:

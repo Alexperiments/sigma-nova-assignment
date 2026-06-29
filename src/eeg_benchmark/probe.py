@@ -1,5 +1,7 @@
-from sklearn.metrics import accuracy_score
+"""Linear-probe training and scoring helpers."""
+
 import torch
+from sklearn.metrics import accuracy_score
 from torch import Tensor, nn
 
 
@@ -12,6 +14,7 @@ def train_linear_probe(
     epochs: int,
     lr: float,
 ) -> nn.Linear:
+    """Train a linear classifier on frozen embeddings."""
     head = nn.Linear(train_embeddings.shape[1], n_classes).to(device)
     optimizer = torch.optim.AdamW(head.parameters(), lr=lr)
     loss_fn = nn.CrossEntropyLoss()
@@ -35,6 +38,7 @@ def score_linear_probe(
     labels: Tensor,
     device: torch.device,
 ) -> float:
+    """Score a trained linear probe with accuracy."""
     head.eval()
     predictions = head(embeddings.to(device)).argmax(dim=1).cpu()
     return float(accuracy_score(labels.cpu().numpy(), predictions.numpy()))
@@ -51,6 +55,7 @@ def evaluate_linear_probe(
     epochs: int,
     lr: float,
 ) -> tuple[float, float]:
+    """Train and evaluate a linear probe on train and test embeddings."""
     head = train_linear_probe(
         train_embeddings,
         train_labels,
