@@ -1,6 +1,6 @@
 import numpy as np
 
-from eeg_benchmark.adapters import adapt_windows_to_model, pad_or_crop_time
+from eeg_benchmark.adapters import adapt_windows_to_model, pad_or_crop_sample
 
 
 class FakeModel:
@@ -21,7 +21,7 @@ class FakeWindows:
 def test_pad_or_crop_time_crops_last_axis() -> None:
     x = np.arange(10).reshape(2, 5)
 
-    result = pad_or_crop_time(x, target_window_samples=3)
+    result = pad_or_crop_sample(x, target_window_samples=3)
 
     np.testing.assert_array_equal(result, x[:, :3])
 
@@ -29,7 +29,7 @@ def test_pad_or_crop_time_crops_last_axis() -> None:
 def test_pad_or_crop_time_pads_last_axis_with_zeroes() -> None:
     x = np.ones((2, 3))
 
-    result = pad_or_crop_time(x, target_window_samples=5)
+    result = pad_or_crop_sample(x, target_window_samples=5)
 
     assert result.shape == (2, 5)
     np.testing.assert_array_equal(result[:, :3], x)
