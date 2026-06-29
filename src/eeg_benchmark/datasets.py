@@ -4,7 +4,11 @@ from typing import Self
 import numpy as np
 from braindecode.datasets import MOABBDataset
 from braindecode.datasets.base import BaseConcatDataset
-from braindecode.preprocessing import Preprocessor, create_windows_from_events, preprocess
+from braindecode.preprocessing import (
+    Preprocessor,
+    create_windows_from_events,
+    preprocess,
+)
 
 MICROVOLTS_PER_VOLT = 1_000_000.0
 EXTREME_AMPLITUDE_MICROVOLTS = 500.0
@@ -57,7 +61,6 @@ class MOABBDatasetWrapper:
         )
         return {event_name: index for index, event_name in enumerate(event_names)}
 
-
     def create_event_windows(self) -> BaseConcatDataset:
         return create_windows_from_events(
             self.dataset,
@@ -67,7 +70,8 @@ class MOABBDatasetWrapper:
             drop_last_window=True,
             preload=False,
         )
-    
+
+
 def split_train_test(
     windows: BaseConcatDataset,
 ) -> tuple[BaseConcatDataset, BaseConcatDataset]:

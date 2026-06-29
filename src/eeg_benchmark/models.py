@@ -28,7 +28,7 @@ class FrozenFoundationModel(ABC):
         except ValueError:
             return None
         return int(value) if value is not None else None
-    
+
     @property
     def expected_channel_names(self) -> list[str] | None:
         return getattr(self.model, "ch_names", None)
@@ -74,7 +74,6 @@ class CBraModFoundationModel(FrozenFoundationModel):
         output = self.model(inputs.to(self.device), return_features=True)
         # Pool channel and patch features into one 200-dimensional vector per trial.
         return output["features"].mean(dim=(1, 2))
-
 
 
 class LaBraMFoundationModel(FrozenFoundationModel):

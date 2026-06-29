@@ -39,7 +39,9 @@ def adapt_windows_to_model(
     for window_dataset in windows.datasets:
         previous_transform = window_dataset.transform
         if previous_transform is None:
-            window_dataset.transform = lambda x: pad_or_crop_sample(x, target_window_samples)
+            window_dataset.transform = lambda x: pad_or_crop_sample(
+                x, target_window_samples
+            )
         else:
             window_dataset.transform = lambda x, transform=previous_transform: (
                 pad_or_crop_sample(transform(x), target_window_samples)
